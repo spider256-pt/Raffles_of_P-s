@@ -20,8 +20,7 @@ contract TestPRaffle is Test {
     address dan = makeAddr("dan");
     address eli = makeAddr("eli");
 
-    address constant DEFAULT_FOUNDRY =
-        0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
+    address constant DEFAULT_FOUNDRY = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
 
     uint256 public STARTING_AMOUNT = 1e18;
 
@@ -115,17 +114,12 @@ contract TestPRaffle is Test {
         vm.expectRevert();
         pRaffle.enterRaffle{value: STARTING_AMOUNT * 6}(the_players);
 
-        uint256 balance_of_contract_after_A_duplicate_attempt = address(pRaffle)
-            .balance;
+        uint256 balance_of_contract_after_A_duplicate_attempt = address(pRaffle).balance;
 
         // console2.log(balance_of_contract_after_A_duplicate_attempt);
         //Assert
 
-        assertEq(
-            balance_of_contract_after_A_duplicate_attempt,
-            0,
-            "should be 5 ether as spider is duplicate"
-        );
+        assertEq(balance_of_contract_after_A_duplicate_attempt, 0, "should be 5 ether as spider is duplicate");
     }
 
     function test_If_A_Address_Is_A_ZeroAddress() public {
@@ -141,48 +135,32 @@ contract TestPRaffle is Test {
         the_players[5] = address(0);
         //Act
         pRaffle.enterRaffle{value: STARTING_AMOUNT * 6}(the_players);
-        uint256 balance_of_contract_after_Allowing_a_zeroAddress = address(
-            pRaffle
-        ).balance;
+        uint256 balance_of_contract_after_Allowing_a_zeroAddress = address(pRaffle).balance;
 
         console2.log(balance_of_contract_after_Allowing_a_zeroAddress);
         vm.stopPrank();
 
         //Assert
 
-        assertEq(
-            balance_of_contract_after_Allowing_a_zeroAddress,
-            6 ether,
-            "should be 5 ether as spider is duplicate"
-        );
+        assertEq(balance_of_contract_after_Allowing_a_zeroAddress, 6 ether, "should be 5 ether as spider is duplicate");
     } //bug 01
 
     function test_Refund() public playersToEnterInRaffle {
         //Arrange
         //Act
-        uint256 balance_Of_contract_before_spider_refund = address(pRaffle)
-            .balance;
+        uint256 balance_Of_contract_before_spider_refund = address(pRaffle).balance;
 
         console2.log(
-            "Balance of Contract Before Spider refunds the balance: ",
-            balance_Of_contract_before_spider_refund
+            "Balance of Contract Before Spider refunds the balance: ", balance_Of_contract_before_spider_refund
         );
         vm.prank(spider);
         pRaffle.refund(0);
 
-        uint256 balance_Of_contract_after_spider_refund = address(pRaffle)
-            .balance;
+        uint256 balance_Of_contract_after_spider_refund = address(pRaffle).balance;
 
-        console2.log(
-            "Balance of Contract after Spider refunds the balance: ",
-            balance_Of_contract_after_spider_refund
-        );
+        console2.log("Balance of Contract after Spider refunds the balance: ", balance_Of_contract_after_spider_refund);
         //Assert
-        assertEq(
-            balance_Of_contract_before_spider_refund,
-            5 ether,
-            "As spider enter raffle with 5 raffle"
-        );
+        assertEq(balance_Of_contract_before_spider_refund, 5 ether, "As spider enter raffle with 5 raffle");
         assertEq(
             balance_Of_contract_after_spider_refund,
             balance_Of_contract_before_spider_refund - 1e18,
