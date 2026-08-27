@@ -200,8 +200,8 @@ contract TestPRaffle is Test {
 
     function test_AfterRefund_array_Size_changes() public playersToEnterInRaffle {
         //Arrange
-        vm.prank(alice);
-        pRaffle.refund(1);
+        vm.prank(spider);
+        pRaffle.refund(0);
 
         uint256 balance_Of_contract_after_spider_refund = address(pRaffle).balance;
 
