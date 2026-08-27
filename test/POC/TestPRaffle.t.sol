@@ -153,6 +153,7 @@ contract TestPRaffle is Test {
         console2.log(
             "Balance of Contract Before Spider refunds the balance: ", balance_Of_contract_before_spider_refund
         );
+
         vm.prank(spider);
         pRaffle.refund(0);
 
@@ -167,4 +168,83 @@ contract TestPRaffle is Test {
             "Spider refunds its fund"
         );
     }
+
+    function test_Revert_if_spider_tries_to_refund_alice_funds() public playersToEnterInRaffle {
+        //Arrange
+
+        uint256 balance_Of_contract_before_spider_refunds_the_alice_funds = address(pRaffle).balance;
+
+        console2.log(
+            "Balance of Contract before spider refunds the alice_funds: ",
+            balance_Of_contract_before_spider_refunds_the_alice_funds
+        );
+        //Act
+        vm.prank(spider);
+        vm.expectRevert();
+        pRaffle.refund(1);
+
+        uint256 balance_Of_contract_after_spider_tries_to_refund_alice_funds = address(pRaffle).balance;
+
+        console2.log(
+            "Balance of Contract after spider tries to refund alice_funds: ",
+            balance_Of_contract_after_spider_tries_to_refund_alice_funds
+        );
+
+        //Assert
+        assertEq(
+            balance_Of_contract_after_spider_tries_to_refund_alice_funds,
+            balance_Of_contract_before_spider_refunds_the_alice_funds,
+            "Should be same it should reverts"
+        );
+    }
+
+    function test_AfterRefund_array_Size_changes() public playersToEnterInRaffle {
+        //Arrange
+        vm.prank(alice);
+        pRaffle.refund(1);
+
+        uint256 balance_Of_contract_after_spider_refund = address(pRaffle).balance;
+
+        console2.log("Balance of Contract after Spider refunds the balance: ", balance_Of_contract_after_spider_refund);
+        //Act
+        //Assert
+        assertEq(pRaffle.getActivePlayerIndex(address(0)), 0);
+
+        assertEq(pRaffle.getActivePlayerIndex(alice), 1);
+
+        assertEq(pRaffle.getActivePlayerIndex(bob), 2);
+        assertEq(pRaffle.getActivePlayerIndex(dan), 3);
+        assertEq(pRaffle.getActivePlayerIndex(eli), 4);
+    }
+
+    function test_Fails_to_selectWinner() public playersToEnterInRaffle {
+        //Arrange
+        //Act
+        vm.prank(spider);
+        pRaffle.refund(0);
+        vm.prank(alice);
+        pRaffle.refund(1);
+
+        uint256 balance_of_contract = address(pRaffle).balance;
+        console2.log("Balance of Contract: ", balance_of_contract);
+
+        vm.warp(2 days);
+
+        vm.startPrank(spider);
+        vm.expectRevert();
+        pRaffle.selectWinner();
+        vm.stopPrank();
+
+        uint256 balance_of_after_calling_selectWinner_function = address(pRaffle).balance;
+        console2.log("Balance of Contract: ", balance_of_after_calling_selectWinner_function);
+
+        uint256 totalFees = pRaffle.totalFees();
+        console2.log("Total Fees: ", totalFees);
+        //Assert
+        assertEq(
+            balance_of_contract,
+            balance_of_after_calling_selectWinner_function,
+            "As 2 people Refunded but the state doesnt track it"
+        );
+    } //bug 02
 }
