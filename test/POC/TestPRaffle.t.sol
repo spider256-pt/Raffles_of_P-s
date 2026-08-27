@@ -6,6 +6,7 @@ pragma abicoder v2;
 import {Test, console2} from "forge-std/Test.sol";
 import {PuppyRaffle} from "../../src/PuppyRaffle.sol";
 import {DeployPuppyRaffle} from "../../script/DeployPuppyRaffle.s.sol";
+import {AttackPRaffle} from "../../src/POC/AttackPRaffle.sol";
 
 contract TestPRaffle is Test {
     /*//////////////////////////////////////////////////////////////
@@ -13,6 +14,7 @@ contract TestPRaffle is Test {
     //////////////////////////////////////////////////////////////*/
     DeployPuppyRaffle deployer;
     PuppyRaffle pRaffle;
+    AttackPRaffle attackPRaffle;
 
     address spider = makeAddr("spider");
     address alice = makeAddr("alie");
@@ -28,12 +30,15 @@ contract TestPRaffle is Test {
         deployer = new DeployPuppyRaffle();
         pRaffle = deployer.run();
 
+        attackPRaffle = new AttackPRaffle(address(pRaffle));
+
         vm.deal(spider, 10e18);
         vm.deal(alice, STARTING_AMOUNT);
         vm.deal(bob, STARTING_AMOUNT);
         vm.deal(dan, STARTING_AMOUNT);
         vm.deal(eli, STARTING_AMOUNT);
         vm.deal(DEFAULT_FOUNDRY, STARTING_AMOUNT);
+        vm.deal(address(attackPRaffle), STARTING_AMOUNT);
     }
 
     /*//////////////////////////////////////////////////////////////
