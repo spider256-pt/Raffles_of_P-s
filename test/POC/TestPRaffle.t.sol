@@ -22,7 +22,8 @@ contract TestPRaffle is Test {
     address dan = makeAddr("dan");
     address eli = makeAddr("eli");
 
-    address constant DEFAULT_FOUNDRY = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
+    address constant DEFAULT_FOUNDRY =
+        0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
 
     uint256 public STARTING_AMOUNT = 1e18;
 
@@ -119,12 +120,17 @@ contract TestPRaffle is Test {
         vm.expectRevert();
         pRaffle.enterRaffle{value: STARTING_AMOUNT * 6}(the_players);
 
-        uint256 balance_of_contract_after_A_duplicate_attempt = address(pRaffle).balance;
+        uint256 balance_of_contract_after_A_duplicate_attempt = address(pRaffle)
+            .balance;
 
         // console2.log(balance_of_contract_after_A_duplicate_attempt);
         //Assert
 
-        assertEq(balance_of_contract_after_A_duplicate_attempt, 0, "should be 5 ether as spider is duplicate");
+        assertEq(
+            balance_of_contract_after_A_duplicate_attempt,
+            0,
+            "should be 5 ether as spider is duplicate"
+        );
     }
 
     function test_If_A_Address_Is_A_ZeroAddress() public {
@@ -140,33 +146,49 @@ contract TestPRaffle is Test {
         the_players[5] = address(0);
         //Act
         pRaffle.enterRaffle{value: STARTING_AMOUNT * 6}(the_players);
-        uint256 balance_of_contract_after_Allowing_a_zeroAddress = address(pRaffle).balance;
+        uint256 balance_of_contract_after_Allowing_a_zeroAddress = address(
+            pRaffle
+        ).balance;
 
         console2.log(balance_of_contract_after_Allowing_a_zeroAddress);
         vm.stopPrank();
 
         //Assert
 
-        assertEq(balance_of_contract_after_Allowing_a_zeroAddress, 6 ether, "should be 5 ether as spider is duplicate");
+        assertEq(
+            balance_of_contract_after_Allowing_a_zeroAddress,
+            6 ether,
+            "should be 5 ether as spider is duplicate"
+        );
     } //bug 01
 
     function test_Refund() public playersToEnterInRaffle {
         //Arrange
         //Act
-        uint256 balance_Of_contract_before_spider_refund = address(pRaffle).balance;
+        uint256 balance_Of_contract_before_spider_refund = address(pRaffle)
+            .balance;
 
         console2.log(
-            "Balance of Contract Before Spider refunds the balance: ", balance_Of_contract_before_spider_refund
+            "Balance of Contract Before Spider refunds the balance: ",
+            balance_Of_contract_before_spider_refund
         );
 
         vm.prank(spider);
         pRaffle.refund(0);
 
-        uint256 balance_Of_contract_after_spider_refund = address(pRaffle).balance;
+        uint256 balance_Of_contract_after_spider_refund = address(pRaffle)
+            .balance;
 
-        console2.log("Balance of Contract after Spider refunds the balance: ", balance_Of_contract_after_spider_refund);
+        console2.log(
+            "Balance of Contract after Spider refunds the balance: ",
+            balance_Of_contract_after_spider_refund
+        );
         //Assert
-        assertEq(balance_Of_contract_before_spider_refund, 5 ether, "As spider enter raffle with 5 raffle");
+        assertEq(
+            balance_Of_contract_before_spider_refund,
+            5 ether,
+            "As spider enter raffle with 5 raffle"
+        );
         assertEq(
             balance_Of_contract_after_spider_refund,
             balance_Of_contract_before_spider_refund - 1e18,
@@ -174,10 +196,15 @@ contract TestPRaffle is Test {
         );
     }
 
-    function test_Revert_if_spider_tries_to_refund_alice_funds() public playersToEnterInRaffle {
+    function test_Revert_if_spider_tries_to_refund_alice_funds()
+        public
+        playersToEnterInRaffle
+    {
         //Arrange
 
-        uint256 balance_Of_contract_before_spider_refunds_the_alice_funds = address(pRaffle).balance;
+        uint256 balance_Of_contract_before_spider_refunds_the_alice_funds = address(
+                pRaffle
+            ).balance;
 
         console2.log(
             "Balance of Contract before spider refunds the alice_funds: ",
@@ -188,7 +215,9 @@ contract TestPRaffle is Test {
         vm.expectRevert();
         pRaffle.refund(1);
 
-        uint256 balance_Of_contract_after_spider_tries_to_refund_alice_funds = address(pRaffle).balance;
+        uint256 balance_Of_contract_after_spider_tries_to_refund_alice_funds = address(
+                pRaffle
+            ).balance;
 
         console2.log(
             "Balance of Contract after spider tries to refund alice_funds: ",
@@ -203,14 +232,21 @@ contract TestPRaffle is Test {
         );
     }
 
-    function test_AfterRefund_array_Size_changes() public playersToEnterInRaffle {
+    function test_AfterRefund_array_Size_changes()
+        public
+        playersToEnterInRaffle
+    {
         //Arrange
         vm.prank(spider);
         pRaffle.refund(0);
 
-        uint256 balance_Of_contract_after_spider_refund = address(pRaffle).balance;
+        uint256 balance_Of_contract_after_spider_refund = address(pRaffle)
+            .balance;
 
-        console2.log("Balance of Contract after Spider refunds the balance: ", balance_Of_contract_after_spider_refund);
+        console2.log(
+            "Balance of Contract after Spider refunds the balance: ",
+            balance_Of_contract_after_spider_refund
+        );
         //Act
         //Assert
         assertEq(pRaffle.getActivePlayerIndex(address(0)), 0);
@@ -240,8 +276,13 @@ contract TestPRaffle is Test {
         pRaffle.selectWinner();
         vm.stopPrank();
 
-        uint256 balance_of_after_calling_selectWinner_function = address(pRaffle).balance;
-        console2.log("Balance of Contract: ", balance_of_after_calling_selectWinner_function);
+        uint256 balance_of_after_calling_selectWinner_function = address(
+            pRaffle
+        ).balance;
+        console2.log(
+            "Balance of Contract: ",
+            balance_of_after_calling_selectWinner_function
+        );
 
         uint256 totalFees = pRaffle.totalFees();
         console2.log("Total Fees: ", totalFees);
@@ -252,4 +293,57 @@ contract TestPRaffle is Test {
             "As 2 people Refunded but the state doesnt track it"
         );
     } //bug 02
+
+    function test_DOS_If_Many_user_EnterRaffle() public {
+        //Arrange
+        uint256 batch1 = 100;
+        address[] memory batch1Users = new address[](batch1);
+        for (uint256 i = 0; i < batch1; i++) {
+            batch1Users[i] = address(i + 1);
+        }
+        pRaffle.enterRaffle{value: STARTING_AMOUNT * batch1}(batch1Users);
+
+        uint256 batch2 = 1500;
+        address[] memory batch2User = new address[](batch2);
+        for (uint256 i = 0; i < batch2; i++) {
+            batch2User[i] = address(i + 101);
+        }
+
+        //Act
+        pRaffle.enterRaffle{value: STARTING_AMOUNT * batch2}(batch2User);
+        //Assert
+    } //bug 03
+
+    function test_The_Random_Winner_Can_be_guessed() public {
+        //Arrange
+        address[] memory players = new address[](6);
+
+        players[0] = spider;
+        players[1] = alice;
+        players[2] = bob;
+        players[3] = dan;
+        players[4] = eli;
+        players[5] = address(attackPRaffle);
+
+        pRaffle.enterRaffle{value: STARTING_AMOUNT * 6}(players);
+
+        uint256 Number_Of_players_in_Raffle = 6;
+
+        vm.warp(block.timestamp + 2 days);
+
+        uint256 expectedWinner = uint256(
+            keccak256(
+                abi.encodePacked(
+                    address(attackPRaffle),
+                    block.timestamp,
+                    block.difficulty
+                )
+            )
+        ) % Number_Of_players_in_Raffle;
+
+        console2.log("Expected winner: ", expectedWinner);
+        //Act//Assert
+        vm.prank(address(attackPRaffle));
+        attackPRaffle.attack(Number_Of_players_in_Raffle);
+    }
 }
